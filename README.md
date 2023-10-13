@@ -2,6 +2,8 @@ This is project is created for the frontend interview assesment from CAW studios
 
 Problem statement: https://drive.google.com/drive/folders/1yGWs1hFkMS0NxPGGyLIX9j5YgKSaMzuB
 
+Hosted App: https://reeco-chandra-manikandan.netlify.app/
+
 # Project Stack
 
 1. React Js
