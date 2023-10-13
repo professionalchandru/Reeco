@@ -2,15 +2,8 @@ import { AppActions, IappState } from "../types";
 
 
 const AppState: IappState = {
-  products: [{
-    productId: 0,
-    productName: '',
-    brand: '',
-    price: 0,
-    quantity: '',
-    total: 0,
-    status: '',
-  }],
+  products: [],
+  searchedProducts: [],
   isLoading: false,
   isModalOpen: false,
   modalProductId: -1,
@@ -23,6 +16,8 @@ export const AppReducer = (state = AppState, action: AppActions) => {
       return { ...state, isLoading: action.payload }
     case 'getAllProducts':
       return { ...state, products: action.payload.products }
+    case 'searchProduct':
+      return { ...state, searchedProducts: action.payload }
     case 'addProduct':
       return { ...state, products: [...state.products, action.payload] }
     case 'updateStatus':

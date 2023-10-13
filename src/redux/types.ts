@@ -48,6 +48,11 @@ export interface IupdateOrder {
   payload: boolean
 }
 
+export interface IsearchProducts {
+  type: 'searchProduct',
+  payload: Iproduct[]
+}
+
 export interface Iproduct {
   productId: number;
   productName: string;
@@ -60,13 +65,14 @@ export interface Iproduct {
 
 export interface IappState {
   products: Iproduct[];
+  searchedProducts: Iproduct[];
   isLoading: boolean;
   isModalOpen: boolean;
   modalProductId: number;
   isOrderApproved: boolean;
 }
 
-export type AppActions = IgetAllProducts | IsetAppLoading | IaddProduct | IcloseModal | IOpenModal | IupdateStatus | IupdateOrder;
+export type AppActions = IgetAllProducts | IsetAppLoading | IaddProduct | IcloseModal | IOpenModal | IupdateStatus | IupdateOrder | IsearchProducts;
 
 export type ApplicationAction = AppActions;
 

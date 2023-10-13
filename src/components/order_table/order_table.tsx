@@ -33,16 +33,20 @@ import { Iproduct } from "../../redux/types";
 import {
   addProduct,
   openModal,
+  searchProduct,
   updateStatus,
 } from "../../redux/actions/app_actions";
+import { useState } from "react";
 
 interface Iprops {
   products: Iproduct[];
+  searchedProducts: Iproduct[];
   isModalOpen: boolean;
   isOrderApproved: boolean;
   addProduct: () => void;
   openModal: (productId: number) => void;
   updateStatus: (id: number, status: tagType) => void;
+  searchProduct: (productName: string) => void;
 }
 
 const OrderTable = (props: Iprops) => {
@@ -50,10 +54,14 @@ const OrderTable = (props: Iprops) => {
     products,
     isOrderApproved,
     isModalOpen,
+    searchedProducts,
     addProduct,
     openModal,
     updateStatus,
+    searchProduct,
   } = props;
+
+  const [searchValue, setSearchValue] = useState("");
 
   const handelOpenModal = (productId: number) => {
     if (isOrderApproved) {
@@ -79,11 +87,20 @@ const OrderTable = (props: Iprops) => {
     }
   };
 
+  const handleSearch = (e: any) => {
+    setSearchValue(e.target.value);
+    searchProduct(e.target.value);
+  };
+
   return (
     <>
       <OrderTableOuterConatiner>
         <HeaderRow>
-          <SearchBar placeholder="Search..."></SearchBar>
+          <SearchBar
+            placeholder="Search by product name..."
+            value={searchValue}
+            onChange={handleSearch}
+          />
 
           <RowRight>
             <Button bgColor="transparent" onClick={handleAddProduct}>
@@ -132,96 +149,199 @@ const OrderTable = (props: Iprops) => {
             </TableRow>
           </Thead>
 
-          {products?.map((product: Iproduct, index: number) => {
-            return (
-              <TableRow
-                key={product.productId}
-                isLast={index === products.length - 1}
-              >
-                <TableData
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+          {searchValue && !searchedProducts?.length ? (
+            <tr>
+              <td colSpan={8} style={{ padding: "40px", textAlign: "center" }}>
+                <Text color="text-strong" fontWeight="800">
+                  No results found...
+                </Text>
+              </td>
+            </tr>
+          ) : searchedProducts?.length ? (
+            searchedProducts?.map((product: Iproduct, index: number) => {
+              return (
+                <>
+                  <TableRow
+                    key={product.productId}
+                    isLast={index === products.length - 1}
+                  >
+                    <TableData
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <ProductImg src={avacado} alt="product-img" />
+                    </TableData>
+
+                    <TableData>
+                      <Text color="text-strong" size="tiny">
+                        {product.productName}
+                      </Text>
+                    </TableData>
+
+                    <TableData>
+                      <Text color="text-strong" size="tiny">
+                        {product.brand}
+                      </Text>
+                    </TableData>
+
+                    <TableData>
+                      <Text color="text-strong" size="tiny">
+                        {product.price}
+                      </Text>
+                    </TableData>
+
+                    <TableData>
+                      <Text color="text-strong" size="tiny">
+                        <span style={{ color: "#4d5059", fontWeight: "800" }}>
+                          {product.quantity}
+                        </span>{" "}
+                        x 6 * Lb
+                      </Text>
+                    </TableData>
+
+                    <TableData>
+                      <Text color="text-strong" size="tiny">
+                        {product.total}
+                      </Text>
+                    </TableData>
+
+                    <TableData isLast>
+                      <CenterDiv>
+                        {product.status ? <Tag type={product.status} /> : null}
+                      </CenterDiv>
+                    </TableData>
+
+                    <TableData isLast>
+                      <ActionRow>
+                        {product.status !== "approved" ? (
+                          <ActionImg
+                            src={tickBlack}
+                            alt="tick.png"
+                            onClick={() => handleApprove(product.productId)}
+                          />
+                        ) : (
+                          product.status === "approved" && (
+                            <ActionImg src={tickGreen} alt="tick-green.png" />
+                          )
+                        )}
+                        {product.status !== "missing" &&
+                        product.status !== "missing-urgent" ? (
+                          <ActionImgClose
+                            src={wrongBlack}
+                            alt="close.png"
+                            onClick={() => handelOpenModal(product.productId)}
+                          />
+                        ) : (
+                          <ActionImgClose
+                            src={wrongRed}
+                            alt="close.png"
+                            onClick={() => handelOpenModal(product.productId)}
+                          />
+                        )}
+                        <Text size="tiny" color="text-normal">
+                          Edit
+                        </Text>
+                      </ActionRow>
+                    </TableData>
+                  </TableRow>
+                </>
+              );
+            })
+          ) : (
+            products?.map((product: Iproduct, index: number) => {
+              return (
+                <TableRow
+                  key={product.productId}
+                  isLast={index === products.length - 1}
                 >
-                  <ProductImg src={avacado} alt="product-img" />
-                </TableData>
+                  <TableData
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <ProductImg src={avacado} alt="product-img" />
+                  </TableData>
 
-                <TableData>
-                  <Text color="text-strong" size="tiny">
-                    {product.productName}
-                  </Text>
-                </TableData>
-
-                <TableData>
-                  <Text color="text-strong" size="tiny">
-                    {product.brand}
-                  </Text>
-                </TableData>
-
-                <TableData>
-                  <Text color="text-strong" size="tiny">
-                    {product.price}
-                  </Text>
-                </TableData>
-
-                <TableData>
-                  <Text color="text-strong" size="tiny">
-                    <span style={{ color: "#4d5059", fontWeight: "800" }}>
-                      {product.quantity}
-                    </span>{" "}
-                    x 6 * Lb
-                  </Text>
-                </TableData>
-
-                <TableData>
-                  <Text color="text-strong" size="tiny">
-                    {product.total}
-                  </Text>
-                </TableData>
-
-                <TableData isLast>
-                  <CenterDiv>
-                    {product.status ? <Tag type={product.status} /> : null}
-                  </CenterDiv>
-                </TableData>
-
-                <TableData isLast>
-                  <ActionRow>
-                    {product.status !== "approved" ? (
-                      <ActionImg
-                        src={tickBlack}
-                        alt="tick.png"
-                        onClick={() => handleApprove(product.productId)}
-                      />
-                    ) : (
-                      product.status === "approved" && (
-                        <ActionImg src={tickGreen} alt="tick-green.png" />
-                      )
-                    )}
-                    {product.status !== "missing" &&
-                    product.status !== "missing-urgent" ? (
-                      <ActionImgClose
-                        src={wrongBlack}
-                        alt="close.png"
-                        onClick={() => handelOpenModal(product.productId)}
-                      />
-                    ) : (
-                      <ActionImgClose
-                        src={wrongRed}
-                        alt="close.png"
-                        onClick={() => handelOpenModal(product.productId)}
-                      />
-                    )}
-                    <Text size="tiny" color="text-normal">
-                      Edit
+                  <TableData>
+                    <Text color="text-strong" size="tiny">
+                      {product.productName}
                     </Text>
-                  </ActionRow>
-                </TableData>
-              </TableRow>
-            );
-          })}
+                  </TableData>
+
+                  <TableData>
+                    <Text color="text-strong" size="tiny">
+                      {product.brand}
+                    </Text>
+                  </TableData>
+
+                  <TableData>
+                    <Text color="text-strong" size="tiny">
+                      {product.price}
+                    </Text>
+                  </TableData>
+
+                  <TableData>
+                    <Text color="text-strong" size="tiny">
+                      <span style={{ color: "#4d5059", fontWeight: "800" }}>
+                        {product.quantity}
+                      </span>{" "}
+                      x 6 * Lb
+                    </Text>
+                  </TableData>
+
+                  <TableData>
+                    <Text color="text-strong" size="tiny">
+                      {product.total}
+                    </Text>
+                  </TableData>
+
+                  <TableData isLast>
+                    <CenterDiv>
+                      {product.status ? <Tag type={product.status} /> : null}
+                    </CenterDiv>
+                  </TableData>
+
+                  <TableData isLast>
+                    <ActionRow>
+                      {product.status !== "approved" ? (
+                        <ActionImg
+                          src={tickBlack}
+                          alt="tick.png"
+                          onClick={() => handleApprove(product.productId)}
+                        />
+                      ) : (
+                        product.status === "approved" && (
+                          <ActionImg src={tickGreen} alt="tick-green.png" />
+                        )
+                      )}
+                      {product.status !== "missing" &&
+                      product.status !== "missing-urgent" ? (
+                        <ActionImgClose
+                          src={wrongBlack}
+                          alt="close.png"
+                          onClick={() => handelOpenModal(product.productId)}
+                        />
+                      ) : (
+                        <ActionImgClose
+                          src={wrongRed}
+                          alt="close.png"
+                          onClick={() => handelOpenModal(product.productId)}
+                        />
+                      )}
+                      <Text size="tiny" color="text-normal">
+                        Edit
+                      </Text>
+                    </ActionRow>
+                  </TableData>
+                </TableRow>
+              );
+            })
+          )}
         </Table>
       </OrderTableOuterConatiner>
 
@@ -234,12 +354,14 @@ const mapStateToProps = (state: RootState) => {
   return {
     isOrderApproved: state.App.isOrderApproved,
     products: state.App.products,
+    searchedProducts: state.App.searchedProducts,
     isModalOpen: state.App.isModalOpen,
   };
 };
 const mapDispatchToProps = {
   addProduct: () => addProduct(),
   openModal: (productId: number) => openModal(productId),
+  searchProduct: (productName: string) => searchProduct(productName),
   updateStatus: (productId: number, status: tagType) =>
     updateStatus(productId, status),
 };

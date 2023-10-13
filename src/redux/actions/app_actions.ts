@@ -73,3 +73,16 @@ export const updateOrder = () => (dispatch: Idispatch) => {
     console.log('error', error);
   }
 }
+
+export const searchProduct = (productName: string) => (dispatch: Idispatch, getState: any) => {
+  try {
+    if (productName !== '') {
+      const products = getState().App.products.filter((product: Iproduct) => product.productName.includes(productName))
+      dispatch({ type: 'searchProduct', payload: products })
+    } else {
+      dispatch({ type: 'searchProduct', payload: [] })
+    }
+  } catch (error) {
+    console.log('error', error);
+  }
+}
