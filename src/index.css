@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+  font-family: 'Inter';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #a59f9f;
+  border-radius: 20px;
+  width:  8px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 20px;
+}
